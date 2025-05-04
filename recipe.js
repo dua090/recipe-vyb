@@ -131,6 +131,14 @@ async function fetchRecipe(dishName) {
         {"name": "ingredient name", "quantity": "approximate quantity"}
       ]
     }
+      SNo	Measuing units
+      only use those measuring units
+1	Pieces count
+2	150ml Cup or Katori
+3	250ml Glass
+4	5ml teaspoon
+5	15ml tablespoon
+6	100ml teacup
     Include 5-10 main ingredients with quantities in common household measurements (cups, tbsp, tsp, etc.).
     `;
     

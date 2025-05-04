@@ -123,15 +123,22 @@ async function fetchRecipe(dishName) {
     try {
 
         const prompt = `
-        Create a typical recipe for Indian dish: "${dishName}".
-        Return ONLY a JSON object with this exact structure:
-        { for example
-          "ingredients": [
-            {"name": "ingredient name", "quantity": "approximate quantity"}
-          ]
-        }
-        Include 5-10 main ingredients with quantities in common household measurements (cups, tbsp, tsp, etc.).
-        `;
+         Create a typical recipe for Indian dish: "${dishName}".
+    Return ONLY a JSON object with this exact structure:
+    { for example
+      "ingredients": [
+        {"name": "ingredient name", "quantity": "approximate quantity"}
+      ]
+    }
+      SNo	Measuing units
+      only use those measuring units
+1	Pieces count
+2	150ml Cup or Katori
+3	250ml Glass
+4	5ml teaspoon
+5	15ml tablespoon
+6	100ml teacup
+    Include 5-10 main ingredients with quantities in common household measurements (cups, tbsp, tsp, etc.).`;
 
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
