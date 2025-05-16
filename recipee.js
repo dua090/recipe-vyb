@@ -1,4 +1,4 @@
-    /**
+/**
  * Indian Dish Nutrition Estimator
  * A simple tool to estimate nutritional values of Indian dishes
  */
@@ -6,10 +6,12 @@
 const express = require('express');
 const axios = require('axios');
 const { GoogleGenAI } = require("@google/genai");
+const cors = require('cors');
+
 require('dotenv').config();
 
 // API Keys and configs
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY 
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID
 
@@ -123,7 +125,7 @@ async function fetchRecipe(dishName) {
     try {
 
         const prompt = `
-         Create a typical recipe for Indian dish: "${dishName}".
+            Create a typical recipe for Indian dish: "${dishName}".
     Return ONLY a JSON object with this exact structure:
     { for example
       "ingredients": [
@@ -218,17 +220,17 @@ async function identifyFoodCategory(dishName, recipe) {
     try {
 
         const prompt = `
-        Categorize the Indian dish "${dishName}" into EXACTLY ONE of these categories:
-        - Wet Sabzi
-        - Dry Sabzi
-        - Dal
-        - Non-Veg Curry
-        - Rice Dish
-        - Roti/Bread
-        - Sweet/Dessert
+            Categorize the Indian dish "${dishName}" into EXACTLY ONE of these categories:
+            - Wet Sabzi
+            - Dry Sabzi
+            - Dal
+            - Non-Veg Curry
+            - Rice Dish
+            - Roti/Bread
+            - Sweet/Dessert
 
-        Return ONLY the category name, nothing else.
-        `;
+            Return ONLY the category name, nothing else.
+            `;
 
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
@@ -479,11 +481,11 @@ async function estimateNutritionWithGemini(ingredientName, weightInGrams) {
 
     try {
         const prompt = `
-        Please estimate the nutritional values for ${weightInGrams}g of ${ingredientName}.
-        Provide ONLY a JSON with exact keys: calories, protein, carbs, fat, fiber.
-        Values should be numbers only (no units), with calories in kcal and others in grams.
-        Example: {"calories": 150, "protein": 5, "carbs": 20, "fat": 3, "fiber": 2}
-        `;
+            Please estimate the nutritional values for ${weightInGrams}g of ${ingredientName}.
+            Provide ONLY a JSON with exact keys: calories, protein, carbs, fat, fiber.
+            Values should be numbers only (no units), with calories in kcal and others in grams.
+            Example: {"calories": 150, "protein": 5, "carbs": 20, "fat: 3, "fiber": 2}
+            `;
 
         const response = await ai.models.generateContent({
             model: "gemini-pro",
@@ -567,7 +569,7 @@ function calculateServingNutrition(totalNutrition, foodType) {
     // Scale nutrition values
     const servingNutrition = {};
     Object.keys(totalNutrition).forEach(key => {
-        servingNutrition[key] = Math.round(totalNutrition[key] * scaleFactor);
+        servingNutrition[key] = Math.round(totalNutrition[key] * scaleFactor * 10) / 10;
     });
 
     return servingNutrition;
@@ -613,6 +615,15 @@ const port = 3000;
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+
+// Enable CORS (for all origins in development - adjust as needed for production)
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
 
 // Route to estimate nutrition for a dish
 app.post('/estimate', async (req, res) => {
